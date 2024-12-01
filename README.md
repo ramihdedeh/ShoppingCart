@@ -45,11 +45,4 @@ This project leverages the following technologies:
 - **Vite**: Build tool for blazing-fast development and optimized builds.
 - **Node.js**: JavaScript runtime for managing dependencies and scripts.
 
-## Contributing
 
-Contributions are welcome! To contribute:
-
-1. Fork this repository.
-2. Create a new branch for your feature or fix:
-   ```bash
-   git checkout -b your-branch-name
