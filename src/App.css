@@ -1,0 +1,20 @@
+/* Styling for CartPage */
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.cart-item h3 {
+  margin: 0;
+}
+
+.cart-item div {
+  display: flex;
+  align-items: center;
+}
+
+.cart-item button {
+  margin: 0 0.5rem;
+}
