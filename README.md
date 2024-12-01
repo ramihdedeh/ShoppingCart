@@ -21,6 +21,7 @@ Before starting, ensure you have the following installed:
    ```bash
    git clone https://github.com/ramihdedeh/ShoppingCart.git
    cd ShoppingCart
+   
 ## Start the Development Server
 
 1. Start the development server with:
@@ -30,16 +31,17 @@ Before starting, ensure you have the following installed:
    ```bash
 http://localhost:5173
 
-Features
+## Features
+
 Fast Development: Built with Vite for an optimized development workflow.
 Live Reload and HMR: Changes to your code are reflected immediately in the browser.
 Modern Frontend: Built using React with support for JSX and functional components.
 CSS Modules: Style your components with scoped CSS for better maintainability.
-Technologies
+
+##Technologies
 
 This project leverages the following technologies:
 
 React: Frontend library for building dynamic user interfaces.
 Vite: Build tool for blazing-fast development and optimized builds.
-Node.js: JavaScript runtime for managing dependencies and scripts.
-
+Node.js: JavaScript runtime for managing dependencies and scripts
