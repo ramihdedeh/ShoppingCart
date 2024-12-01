@@ -53,4 +53,3 @@ Contributions are welcome! To contribute:
 2. Create a new branch for your feature or fix:
    ```bash
    git checkout -b your-branch-name
-
