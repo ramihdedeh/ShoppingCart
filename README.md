@@ -30,7 +30,7 @@ Before starting, ensure you have the following installed:
 2.Open your browser and navigate to:
    ```bash
 http://localhost:5173
-
+   ```
 ## Features
 
 Fast Development: Built with Vite for an optimized development workflow.
