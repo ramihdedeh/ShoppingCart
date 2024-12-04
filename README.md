@@ -38,7 +38,7 @@ Live Reload and HMR: Changes to your code are reflected immediately in the brows
 Modern Frontend: Built using React with support for JSX and functional components.
 CSS Modules: Style your components with scoped CSS for better maintainability.
 
-##Technologies
+**Technologies**
 
 This project leverages the following technologies:
 
