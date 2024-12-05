@@ -35,10 +35,16 @@ export default function App() {
 
   return (
     <Router>
-      <nav>
-        <Link to="/">Home</Link>
-        <Link to="/shop">Shop</Link>
-        <Link to="/cart">Cart ({totalItems})</Link>
+      <nav style={navStyle}>
+        <Link to="/" style={linkStyle}>
+          Home
+        </Link>
+        <Link to="/shop" style={linkStyle}>
+          Shop
+        </Link>
+        <Link to="/cart" style={linkStyle}>
+          Cart ({totalItems})
+        </Link>
       </nav>
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -57,3 +63,32 @@ export default function App() {
     </Router>
   );
 }
+
+const navStyle = {
+  display: 'flex',
+  justifyContent: 'center',
+  gap: '27rem',
+  padding: '1rem',
+  backgroundColor: 'white',
+  borderBottom: '1px solid #ddd',
+};
+
+const linkStyle = {
+  textDecoration: 'none',
+  fontSize: '1.2rem',
+  
+  color: 'white',
+  padding: '0.3rem 2.5rem',
+  border: '1px red', // Border for encadre effect
+  borderRadius: '20px',
+  backgroundColor: 'red',
+  textTransform: 'uppercase', // Adds all-caps styling for better lettering
+  boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Adds subtle depth
+  transition: 'transform 0.2s ease, background-color 0.3s ease',
+};
+
+// Hover effect added inline:
+linkStyle[':hover'] = {
+  backgroundColor: 'dark red',
+  transform: 'scale(1.1)',
+};
