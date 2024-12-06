@@ -22,7 +22,7 @@ Before starting, ensure you have the following installed:
    git clone https://github.com/ramihdedeh/ShoppingCart.git
    cd ShoppingCart
    
-## Start the Development Server
+## Start REACT
 
 1. Start the development server with:
    ```bash
