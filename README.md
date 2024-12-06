@@ -67,7 +67,7 @@ const sequelize = new Sequelize('shoppingcart', 'root', 'password', {
 ```
 ### 3. Build the Backend
 
-To build the backend, run the following command in the `springboot-backend` directory:
+To build the backend, run the following command in the `Express-backend` directory:
 
 ```bash
 npm build
@@ -111,7 +111,7 @@ CSS Modules: Style your components with scoped CSS for better maintainability.
 
 This project leverages the following technologies:
 
-React: Frontend library for building dynamic user interfaces.
-Vite: Build tool for blazing-fast development and optimized builds.
-Node.js: JavaScript runtime for managing dependencies and scripts
-Express: backend library for building backend 
+React: Frontend library for building dynamic user interfaces.  
+Vite: Build tool for blazing-fast development and optimized builds.  
+Node.js: JavaScript runtime for managing dependencies and scripts.  
+Express: backend library for building backend. 
