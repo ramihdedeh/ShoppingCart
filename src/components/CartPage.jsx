@@ -23,8 +23,12 @@ export default function CartPage() {
   }, []);
 
   const calculateTotal = (cart) => {
-    const totalCost = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    setTotal(totalCost.toFixed(2));
+    const totalCost = cart.reduce((acc, item) => {
+      const price = item.price ? Number(item.price) : 0; // Ensure price is numeric
+      const quantity = item.quantity || 1; // Default quantity to 1
+      return acc + price * quantity;
+    }, 0);
+    setTotal(totalCost.toFixed(2)); // Ensure total is formatted correctly
   };
 
   const handleRemove = async (id) => {
@@ -54,16 +58,24 @@ export default function CartPage() {
       ) : (
         <div>
           <ul style={cartListStyle}>
-            {cart.map((item) => (
-              <li key={item.id} style={cartItemStyle}>
-                <img src={item.image} alt={item.title} style={itemImageStyle} />
-                <div>
-                  <h3 style={itemTitleStyle}>{item.title}</h3>
-                  <p style={itemPriceStyle}>${item.price.toFixed(2)} x {item.quantity}</p>
-                </div>
-                <button onClick={() => handleRemove(item.id)} style={removeButtonStyle}>Remove</button>
-              </li>
-            ))}
+            {cart.map((item) => {
+              const price = item.price ? Number(item.price).toFixed(2) : '0.00'; // Fallback for invalid prices
+              const quantity = item.quantity || 1; // Default quantity to 1
+              return (
+                <li key={item.id} style={cartItemStyle}>
+                  <img src={item.image} alt={item.title} style={itemImageStyle} />
+                  <div>
+                    <h3 style={itemTitleStyle}>{item.title}</h3>
+                    <p style={itemPriceStyle}>
+                      ${price} x {quantity}
+                    </p>
+                  </div>
+                  <button onClick={() => handleRemove(item.id)} style={removeButtonStyle}>
+                    Remove
+                  </button>
+                </li>
+              );
+            })}
           </ul>
           <h2 style={totalStyle}>Total: ${total}</h2>
         </div>

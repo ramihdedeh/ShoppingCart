@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const sequelize = require('./models/index');
 const User = require('./models/User');
+const Product = require('./models/product');
     
 const app = express();
 const PORT = 5000;
@@ -55,7 +56,16 @@ app.post('/login', async (req, res) => {
     res.status(500).send('Error logging in');
   }
 });
-
+// Fetch all products
+app.get('/products', async (req, res) => {
+  try {
+    const products = await Product.findAll();
+    res.status(200).json(products);
+  } catch (err) {
+    console.error('Error fetching products:', err);
+    res.status(500).send('Error fetching products');
+  }
+});
 // Get User Cart
 app.get('/cart', async (req, res) => {
   try {

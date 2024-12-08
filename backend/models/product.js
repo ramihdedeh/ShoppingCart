@@ -14,6 +14,8 @@ const Product = sequelize.define('Product', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+}, {
+  timestamps: false, // Disable createdAt and updatedAt
 });
 
 module.exports = Product;

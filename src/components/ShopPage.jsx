@@ -4,12 +4,24 @@ import axios from 'axios';
 export default function ShopPage() {
   const [products, setProducts] = useState([]);
 
+/*
   useEffect(() => {
-    fetch('https://fakestoreapi.com/products')
+    fetch('http://localhost:5000/products')
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch((err) => console.error('Error fetching products:', err));
   }, []);
+  */
+  useEffect(() => {
+    fetch('http://localhost:5000/products')
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('Products:', data); // Inspect data structure
+        setProducts(data);
+      })
+      .catch((err) => console.error('Error fetching products:', err));
+  }, []);
+  
 
   const addToCart = async (product, quantity) => {
     try {
@@ -65,7 +77,7 @@ function ProductCard({ product, addToCart }) {
       <img src={product.image} alt={product.title} style={imageStyle} />
       <div style={contentStyle}>
         <h3 style={titleStyle}>{product.title}</h3>
-        <p style={priceStyle}>${product.price.toFixed(2)}</p>
+        <p style={priceStyle}>${Number(product.price).toFixed(2)}</p>
       </div>
       <div style={footerStyle}>
         <div style={quantityControlsStyle}>
