@@ -96,8 +96,11 @@ If the database does not already exist, follow these steps to create it:
 
 2. Run the following SQL command to create the database:
    ```sql
-   CREATE DATABASE your_database_name;
-
+   CREATE DATABASE shoppingcart;
+3.you have to create two table:
+```sql
+CREATE TABLE users
+CREATE TABLE products
 
 
 ## Features
