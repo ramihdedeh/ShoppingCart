@@ -96,18 +96,41 @@ If the database does not already exist, follow these steps to create it:
 
 2. Run the following SQL command to create the database:
    ```sql
-   CREATE DATABASE your_database_name;
+   CREATE DATABASE shoppingcart;
+3. you have to create two table:
+```sql
+CREATE TABLE users;
+CREATE TABLE products;
+```
+4. users have the following column:
+
+username    
+password    
+cart json   
+createdAt datetime   
+updatedAt datetime   
+role  
+
+5. products have the following column:  
+
+title  
+description  
+price decimal(10,2)   
+image varchar(255)   
+stock int   
+category  
 
 
 
-## Features
-
+Features
+-
 Fast Development: Built with Vite for an optimized development workflow.
 Live Reload and HMR: Changes to your code are reflected immediately in the browser.
 Modern Frontend: Built using React with support for JSX and functional components.
 CSS Modules: Style your components with scoped CSS for better maintainability.
 
-**Technologies**
+Technologies
+-
 
 This project leverages the following technologies:
 
