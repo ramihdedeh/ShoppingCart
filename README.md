@@ -97,19 +97,22 @@ If the database does not already exist, follow these steps to create it:
 2. Run the following SQL command to create the database:
    ```sql
    CREATE DATABASE shoppingcart;
-3.you have to create two table:
+3. you have to create two table:
 ```sql
 CREATE TABLE users;
 CREATE TABLE products;
 ```
-4.users have the following column:
+4. users have the following column:
+
 username    
 password    
 cart json   
 createdAt datetime   
 updatedAt datetime   
 role  
--products have the following column:
+
+5. products have the following column:  
+
 title  
 description  
 price decimal(10,2)   
