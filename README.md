@@ -103,12 +103,20 @@ CREATE TABLE users;
 CREATE TABLE products;
 ```
 4.users have the following column:
-username  
-password  
-cart json 
-createdAt datetime 
-updatedAt datetime 
-role
+username    
+password    
+cart json   
+createdAt datetime   
+updatedAt datetime   
+role  
+-products have the following column:
+title  
+description  
+price decimal(10,2)   
+image varchar(255)   
+stock int   
+category  
+
 
 
 Features
@@ -118,7 +126,8 @@ Live Reload and HMR: Changes to your code are reflected immediately in the brows
 Modern Frontend: Built using React with support for JSX and functional components.
 CSS Modules: Style your components with scoped CSS for better maintainability.
 
-**Technologies**
+Technologies
+-
 
 This project leverages the following technologies:
 
