@@ -7,6 +7,8 @@ const sequelize = require('./models/index');
 const User = require('./models/User');
 const Product = require('./models/product');
 const { Sequelize } = require('sequelize');
+const isAdmin = require('./middlewares/isAdmin');
+
     
 const app = express();
 const PORT = 5000;
@@ -44,18 +46,26 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
+
+    // Find user by username
     const user = await User.findOne({ where: { username } });
     if (!user) return res.status(404).send('User not found');
 
+    // Validate password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) return res.status(401).send('Invalid credentials');
 
-    const token = jwt.sign({ id: user.id }, SECRET_KEY, { expiresIn: '1h' });
-    res.status(200).json({ token });
+    // Generate a token with role information included
+    const token = jwt.sign({ id: user.id, role: user.role }, SECRET_KEY, { expiresIn: '1h' });
+
+    // Respond with token and role
+    res.status(200).json({ token, role: user.role });
   } catch (err) {
+    console.error('Error during login:', err);
     res.status(500).send('Error logging in');
   }
 });
+
 // Logout
 app.post('/logout', (req, res) => {
   res.status(200).send('Logout successful');
@@ -136,7 +146,32 @@ app.get('/categories', async (req, res) => {
   }
 });
 
+//API's for the ADMIN Feature
 
+// Protect the route for adding products
+app.post('/products', isAdmin, async (req, res) => {
+  try {
+    const { title, description, price, image, stock, category } = req.body;
+    const newProduct = await Product.create({ title, description, price, image, stock, category });
+    res.status(201).json(newProduct);
+  } catch (err) {
+    console.error('Error adding product:', err);
+    res.status(500).send('Error adding product');
+  }
+});
+
+// Protect the route for deleting products
+app.delete('/products/:id', isAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedCount = await Product.destroy({ where: { id } });
+    if (deletedCount === 0) return res.status(404).send('Product not found');
+    res.status(200).send('Product deleted successfully');
+  } catch (err) {
+    console.error('Error deleting product:', err);
+    res.status(500).send('Error deleting product');
+  }
+});
 
 
 // Start Server

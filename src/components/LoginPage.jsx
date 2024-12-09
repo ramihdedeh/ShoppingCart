@@ -12,13 +12,29 @@ export default function LoginPage({ onLogin }) {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:5000/login', { username, password });
+  
+      // Store the token in localStorage
       localStorage.setItem('token', response.data.token);
-      onLogin(); // Notify App of successful login
-      navigate('/shop'); // Redirect to ShopPage after login
+  
+      // Store the role in localStorage
+      const { role } = response.data; // Ensure the backend returns a "role" in the response
+      localStorage.setItem('role', role);
+  
+      // Notify App of successful login
+      onLogin();
+  
+      // Redirect based on the role
+      if (role === 'admin') {
+        navigate('/admin'); // Redirect admin to AdminPage
+      } else {
+        navigate('/shop'); // Redirect regular users to ShopPage
+      }
     } catch (err) {
+      // Handle login errors
       setError('Invalid username or password');
     }
   };
+  
 
   return (
     <div style={containerStyle}>

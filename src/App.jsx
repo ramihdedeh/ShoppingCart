@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
+import { Route, Routes, Link, Navigate, useNavigate } from 'react-router-dom'; // Keep necessary imports
 import HomePage from './components/HomePage';
 import ShopPage from './components/ShopPage';
 import CartPage from './components/CartPage';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
+import AdminPage from './components/AdminPage'; // Add Admin Page
+import AddProductPage from './components/AddProductPage'; // Add Product Page
 import LogoutButton from './components/LogoutButton';
 import axios from 'axios';
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+  const [userRole, setUserRole] = useState(localStorage.getItem('role')); // Role state
   const [cart, setCart] = useState([]);
+  const navigate = useNavigate();
 
-  // Fetch the cart when the user logs in
   useEffect(() => {
     if (isLoggedIn) {
       fetchCart();
@@ -42,7 +45,6 @@ export default function App() {
         updatedCart.push({ ...product, quantity });
       }
 
-      // Update the backend
       const token = localStorage.getItem('token');
       await axios.post(
         'http://localhost:5000/cart',
@@ -52,82 +54,90 @@ export default function App() {
         }
       );
 
-      setCart(updatedCart); // Update local state
+      setCart(updatedCart);
     } catch (err) {
       console.error('Failed to add to cart:', err);
     }
   };
 
-  const removeFromCart = async (productId) => {
-    try {
-      const updatedCart = cart.filter((item) => item.id !== productId);
-
-      // Update the backend
-      const token = localStorage.getItem('token');
-      await axios.post(
-        'http://localhost:5000/cart',
-        { cart: updatedCart },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      setCart(updatedCart); // Update local state
-    } catch (err) {
-      console.error('Failed to remove from cart:', err);
-    }
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    setUserRole(localStorage.getItem('role'));
   };
 
-  const handleLogin = () => setIsLoggedIn(true);
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('role');
     setIsLoggedIn(false);
-    setCart([]); // Clear cart on logout
+    setUserRole(null);
+    navigate('/login');
   };
 
   return (
-    <Router>
-        <nav style={navStyle}>
-      <Link to="/" style={linkStyle}>Home</Link>
-      <Link to="/shop" style={linkStyle}>Shop</Link>
-      {isLoggedIn ? (
-        <>
+    <>
+      <nav style={navStyle}>
+        <Link to="/" style={linkStyle}>Home</Link>
+        {userRole !== 'admin' && <Link to="/shop" style={linkStyle}>Shop</Link>}
+        {isLoggedIn && userRole !== 'admin' && (
           <Link to="/cart" style={linkStyle}>Cart</Link>
+        )}
+        {isLoggedIn && userRole === 'admin' && (
+          <>
+            <Link to="/admin" style={linkStyle}>Admin</Link>
+            <Link to="/add-product" style={linkStyle}>Add+  </Link>
+          </>
+        )}
+        {isLoggedIn ? (
           <LogoutButton onLogout={handleLogout} />
-        </>
-      ) : (
-        <>
-          <Link to="/login" style={linkStyle}>Login</Link>
-          <Link to="/signup" style={linkStyle}>Signup</Link>
-        </>
-      )}
-    </nav>
+        ) : (
+          <>
+            <Link to="/login" style={linkStyle}>Login</Link>
+            <Link to="/signup" style={linkStyle}>Signup</Link>
+          </>
+        )}
+      </nav>
 
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/shop" element={<ShopPage addToCart={addToCart} />} />
-        <Route path="/cart" element={isLoggedIn ? <CartPage /> : <Navigate to="/login" />} />
-
+        <Route
+          path="/shop"
+          element={
+            isLoggedIn && userRole !== 'admin' ? <ShopPage addToCart={addToCart} /> : <Navigate to="/login" />
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            isLoggedIn && userRole !== 'admin' ? <CartPage /> : <Navigate to="/login" />
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            isLoggedIn && userRole === 'admin' ? <AdminPage /> : <Navigate to="/login" />
+          }
+        />
+        <Route
+          path="/add-product"
+          element={
+            isLoggedIn && userRole === 'admin' ? <AddProductPage /> : <Navigate to="/login" />
+          }
+        />
         <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
         <Route path="/signup" element={<SignupPage />} />
       </Routes>
-    </Router>
+    </>
   );
 }
 
 const navStyle = {
-  
   display: 'flex',
   justifyContent: 'space-around',
   alignItems: 'center',
-  gap: '15.5rem',
+  gap: '17.5rem',
   padding: '1rem',
   backgroundColor: '#f8f8f8',
   borderBottom: '1px solid #ddd',
-  top: 0,                 // Aligns it to the top
-  left: 0,
-  width: '100%',
-  
 };
 
 const linkStyle = {
@@ -142,9 +152,4 @@ const linkStyle = {
   transition: 'transform 0.2s ease, background-color 0.3s ease',
   cursor: 'pointer',
   border: 'none',
-  marginLeft: '1rem',
-};
-
-linkStyle[':hover'] = {
-  backgroundColor: 'darkred',
 };

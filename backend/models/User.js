@@ -15,6 +15,11 @@ const User = sequelize.define('Users', {
     type: DataTypes.JSON,
     defaultValue: [],
   },
+  role: { // Add the role column
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'user', // Default role is "user"
+  },
 });
 
 module.exports = User;
