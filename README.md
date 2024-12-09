@@ -102,9 +102,16 @@ If the database does not already exist, follow these steps to create it:
 CREATE TABLE users;
 CREATE TABLE products;
 ```
+4.users have the following column:
+username  
+password  
+cart json 
+createdAt datetime 
+updatedAt datetime 
+role
+-
 
-
-##Features
+**Features**
 
 Fast Development: Built with Vite for an optimized development workflow.
 Live Reload and HMR: Changes to your code are reflected immediately in the browser.
