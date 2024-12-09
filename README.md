@@ -109,10 +109,10 @@ cart json
 createdAt datetime 
 updatedAt datetime 
 role
+
+
+Features
 -
-
-**Features**
-
 Fast Development: Built with Vite for an optimized development workflow.
 Live Reload and HMR: Changes to your code are reflected immediately in the browser.
 Modern Frontend: Built using React with support for JSX and functional components.
