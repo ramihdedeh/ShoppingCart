@@ -3,25 +3,44 @@ import axios from 'axios';
 
 export default function ShopPage() {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]); // State to store categories
+  const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
 
-/*
+  // Fetch categories from the backend
   useEffect(() => {
-    fetch('http://localhost:5000/products')
-      .then((res) => res.json())
-      .then((data) => setProducts(data))
-      .catch((err) => console.error('Error fetching products:', err));
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/categories'); // Adjust endpoint if needed
+        setCategories(response.data);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      }
+    };
+
+    fetchCategories();
   }, []);
-  */
+
+  // Fetch products based on the selected category
+  const fetchProducts = async (category) => {
+    try {
+      const endpoint = category
+        ? `http://localhost:5000/products/category/${category}`
+        : 'http://localhost:5000/products'; // Fallback to fetch all products
+      const response = await axios.get(endpoint);
+      setProducts(response.data);
+    } catch (err) {
+      console.error('Error fetching products:', err);
+    }
+  };
+
+  // Fetch products on initial load or category change
   useEffect(() => {
-    fetch('http://localhost:5000/products')
-      .then((res) => res.json())
-      .then((data) => {
-        console.log('Products:', data); // Inspect data structure
-        setProducts(data);
-      })
-      .catch((err) => console.error('Error fetching products:', err));
-  }, []);
-  
+    fetchProducts(selectedCategory);
+  }, [selectedCategory]);
+
+  const handleCategoryChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
 
   const addToCart = async (product, quantity) => {
     try {
@@ -55,6 +74,28 @@ export default function ShopPage() {
   return (
     <div style={containerStyle}>
       <h1 style={headerStyle}>Shop</h1>
+      <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
+        <label htmlFor="category-select" style={{ marginRight: '1rem', fontSize: '1rem' }}>
+          Filter by Category:
+        </label>
+        <select
+          id="category-select"
+          onChange={handleCategoryChange}
+          style={{
+            padding: '0.5rem',
+            fontSize: '1rem',
+            borderRadius: '5px',
+            border: '1px solid #ddd',
+          }}
+        >
+          <option value="">All Categories</option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+      </div>
       <div style={gridStyle}>
         {products.map((product) => (
           <ProductCard key={product.id} product={product} addToCart={addToCart} />
@@ -81,9 +122,13 @@ function ProductCard({ product, addToCart }) {
       </div>
       <div style={footerStyle}>
         <div style={quantityControlsStyle}>
-          <button onClick={decrementQuantity} style={quantityButtonStyle}>-</button>
+          <button onClick={decrementQuantity} style={quantityButtonStyle}>
+            -
+          </button>
           <span style={quantityDisplayStyle}>{quantity}</span>
-          <button onClick={incrementQuantity} style={quantityButtonStyle}>+</button>
+          <button onClick={incrementQuantity} style={quantityButtonStyle}>
+            +
+          </button>
         </div>
         <button style={buttonStyle} onClick={() => addToCart(product, quantity)}>
           Add to Cart
@@ -92,6 +137,7 @@ function ProductCard({ product, addToCart }) {
     </div>
   );
 }
+
 
 // Styling
 const containerStyle = {
@@ -121,9 +167,9 @@ const cardStyle = {
   alignItems: 'center',
   backgroundColor: '#fff',
   border: '1px solid #ddd',
-  borderRadius: '10px',
+  borderRadius: '20px',
   boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-  padding: '1.5rem',
+  padding: '2rem',
   textAlign: 'center',
   transition: 'transform 0.2s ease, box-shadow 0.3s ease',
   height: '100%', // Ensures consistent height for all cards
@@ -149,6 +195,8 @@ const imageStyle = {
   height: '150px',
   objectFit: 'contain',
   marginBottom: '1rem',
+  borderRadius: '10px',
+
 };
 
 const titleStyle = {

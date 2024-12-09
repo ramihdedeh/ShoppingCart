@@ -6,6 +6,7 @@ const cors = require('cors');
 const sequelize = require('./models/index');
 const User = require('./models/User');
 const Product = require('./models/product');
+const { Sequelize } = require('sequelize');
     
 const app = express();
 const PORT = 5000;
@@ -19,7 +20,8 @@ sequelize.sync({ force: false })
   .then(() => console.log('Database synced'))
   .catch((err) => console.error('Error syncing database:', err));
 
-// Register User
+
+
 // Register User
 app.post('/register', async (req, res) => {
     try {
@@ -38,8 +40,6 @@ app.post('/register', async (req, res) => {
       res.status(500).send('Error registering user');
     }
   });
-  
-
 // Login User
 app.post('/login', async (req, res) => {
   try {
@@ -56,6 +56,12 @@ app.post('/login', async (req, res) => {
     res.status(500).send('Error logging in');
   }
 });
+// Logout
+app.post('/logout', (req, res) => {
+  res.status(200).send('Logout successful');
+});
+
+
 // Fetch all products
 app.get('/products', async (req, res) => {
   try {
@@ -66,6 +72,9 @@ app.get('/products', async (req, res) => {
     res.status(500).send('Error fetching products');
   }
 });
+
+
+//API's for the CART FEATURE
 // Get User Cart
 app.get('/cart', async (req, res) => {
   try {
@@ -96,13 +105,39 @@ app.post('/cart', async (req, res) => {
       res.status(401).send('Unauthorized');
     }
   });
-  
 
 
-// Logout
-app.post('/logout', (req, res) => {
-  res.status(200).send('Logout successful');
+//API's for the CATEGORY FEATURE
+app.get('/products/category/:category', async (req, res) => {
+    const { category } = req.params;
+    try {
+      const products = await Product.findAll({
+        where: { category },
+      });
+      res.status(200).json(products);
+    } catch (err) {
+      console.error('Error fetching products by category:', err);
+      res.status(500).send('Error fetching products');
+    }
+  });
+// API to fetch distinct categories
+app.get('/categories', async (req, res) => {
+  try {
+    const categories = await Product.findAll({
+      attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('category')), 'category']],
+    });
+
+    // Extract category names and return them
+    const categoryList = categories.map((c) => c.category);
+    res.status(200).json(categoryList);
+  } catch (err) {
+    console.error('Error fetching categories:', err);
+    res.status(500).send('Error fetching categories');
+  }
 });
+
+
+
 
 // Start Server
 app.listen(PORT, () => {
