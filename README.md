@@ -99,11 +99,12 @@ If the database does not already exist, follow these steps to create it:
    CREATE DATABASE shoppingcart;
 3.you have to create two table:
 ```sql
-CREATE TABLE users
-CREATE TABLE products
+CREATE TABLE users;
+CREATE TABLE products;
+```
 
 
-## Features
+##Features
 
 Fast Development: Built with Vite for an optimized development workflow.
 Live Reload and HMR: Changes to your code are reflected immediately in the browser.
