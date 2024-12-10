@@ -43,33 +43,27 @@ export default function ShopPage() {
   };
 
   const addToCart = async (product, quantity) => {
+    if (quantity > product.stock) {
+      alert(`Only ${product.stock} items are available in stock.`);
+      return;
+    }
+  
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/cart', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const currentCart = response.data;
-
-      const existingProduct = currentCart.find((item) => item.id === product.id);
-      if (existingProduct) {
-        existingProduct.quantity += quantity;
-      } else {
-        currentCart.push({ ...product, quantity });
-      }
-
       await axios.post(
         'http://localhost:5000/cart',
-        { cart: currentCart },
+        { productId: product.id, quantity },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
+  
       alert(`${product.title} added to cart!`);
     } catch (err) {
-      console.error('Error updating cart:', err);
+      console.error('Error adding product to cart:', err);
     }
   };
+  
 
   return (
     <div style={containerStyle}>
@@ -117,9 +111,12 @@ function ProductCard({ product, addToCart }) {
     <div style={cardStyle}>
       <img src={product.image} alt={product.title} style={imageStyle} />
       <div style={contentStyle}>
-        <h3 style={titleStyle}>{product.title}</h3>
-        <p style={priceStyle}>${Number(product.price).toFixed(2)}</p>
-      </div>
+      <h3 style={titleStyle}>{product.title}</h3>
+      <p style={priceStyle}>${Number(product.price).toFixed(2)}</p>
+      <p style={{ fontSize: '0.9rem', color: 'gray' }}>
+        {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+      </p>
+    </div>
       <div style={footerStyle}>
         <div style={quantityControlsStyle}>
           <button onClick={decrementQuantity} style={quantityButtonStyle}>
@@ -130,9 +127,14 @@ function ProductCard({ product, addToCart }) {
             +
           </button>
         </div>
-        <button style={buttonStyle} onClick={() => addToCart(product, quantity)}>
-          Add to Cart
+        <button
+          style={buttonStyle}
+          onClick={() => addToCart(product, quantity)}
+          disabled={product.stock <= 0}
+        >
+          {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
         </button>
+
       </div>
     </div>
   );

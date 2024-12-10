@@ -8,7 +8,7 @@ export default function CartPage() {
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token'); // Get token from localStorage
         const response = await axios.get('http://localhost:5000/cart', {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -18,7 +18,7 @@ export default function CartPage() {
         console.error('Failed to fetch cart:', err);
       }
     };
-
+  
     fetchCart();
   }, []);
 
@@ -33,23 +33,24 @@ export default function CartPage() {
 
   const handleRemove = async (id) => {
     try {
+      const token = localStorage.getItem('token');
+      const cartItem = cart.find((item) => item.id === id);
+  
+      await axios.delete(`http://localhost:5000/cart/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      // Update the frontend cart state
       const updatedCart = cart.filter((item) => item.id !== id);
       setCart(updatedCart);
       calculateTotal(updatedCart);
-
-      const token = localStorage.getItem('token');
-      await axios.post(
-        'http://localhost:5000/cart',
-        { cart: updatedCart },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+  
+      alert(`${cartItem.title} removed from cart!`);
     } catch (err) {
-      console.error('Error removing item:', err);
+      console.error('Error removing item from cart:', err);
     }
   };
-
+  
   return (
     <div style={containerStyle}>
       <h1 style={headerStyle}>Your Cart</h1>

@@ -4,11 +4,15 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const sequelize = require('./models/index');
-const User = require('./models/User');
-const Product = require('./models/product');
+
+const { User, Product, Cart } = require('./models/associations');
+
 const { Sequelize } = require('sequelize');
 const isAdmin = require('./middlewares/isAdmin');
 
+User.sync();
+Product.sync();
+Cart.sync();
     
 const app = express();
 const PORT = 5000;
@@ -90,31 +94,104 @@ app.get('/cart', async (req, res) => {
   try {
     const token = req.headers.authorization.split(' ')[1];
     const decoded = jwt.verify(token, SECRET_KEY);
-    const user = await User.findByPk(decoded.id);
-    if (!user) return res.status(404).send('User not found');
-    res.status(200).json(user.cart);
+    const userId = decoded.id;
+
+    const cartItems = await Cart.findAll({
+      where: { userId },
+      include: [
+        {
+          model: Product,
+          attributes: ['id', 'title', 'price', 'image'], // Fetch required fields
+        },
+      ],
+    });
+
+    const formattedCart = cartItems.map((item) => ({
+      id: item.Product.id,
+      title: item.Product.title,
+      price: item.Product.price,
+      image: item.Product.image,
+      quantity: item.quantity,
+    }));
+
+    res.status(200).json(formattedCart);
   } catch (err) {
-    res.status(401).send('Unauthorized');
+    console.error('Error fetching cart:', err);
+    res.status(500).send('Server error. Please try again later.');
   }
 });
 
+
+
+
 // Update User Cart
 app.post('/cart', async (req, res) => {
-    try {
-      const token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, SECRET_KEY);
-      const user = await User.findByPk(decoded.id);
-      if (!user) return res.status(404).send('User not found');
-  
-      // Update the user's cart
-      user.cart = req.body.cart;
-      await user.save();
-      res.status(200).send('Cart updated');
-    } catch (err) {
-      console.error(err);
-      res.status(401).send('Unauthorized');
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const userId = decoded.id;
+
+    const { productId, quantity } = req.body;
+
+    if (!productId || !quantity) {
+      return res.status(400).send('Product ID and quantity are required');
     }
-  });
+
+    const product = await Product.findByPk(productId);
+    if (!product) {
+      return res.status(404).send('Product not found');
+    }
+
+    if (quantity > product.stock) {
+      return res.status(400).send('Insufficient stock');
+    }
+
+    product.stock -= quantity;
+    await product.save();
+
+    const [cartItem, created] = await Cart.findOrCreate({
+      where: { userId, productId },
+      defaults: { quantity },
+    });
+
+    if (!created) {
+      cartItem.quantity += quantity;
+      await cartItem.save();
+    }
+
+    res.status(200).send('Product added to cart successfully');
+  } catch (err) {
+    console.error('Error adding to cart:', err);
+    res.status(500).send('Server error. Please try again later.');
+  }
+});
+
+app.delete('/cart/:productId', async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const userId = decoded.id;
+
+    const productId = req.params.productId;
+
+    const cartItem = await Cart.findOne({ where: { userId, productId } });
+    if (!cartItem) {
+      return res.status(404).send('Product not found in cart');
+    }
+
+    const product = await Product.findByPk(productId);
+    product.stock += cartItem.quantity;
+    await product.save();
+
+    await cartItem.destroy();
+
+    res.status(200).send('Product removed from cart successfully');
+  } catch (err) {
+    console.error('Error removing from cart:', err);
+    res.status(500).send('Server error. Please try again later.');
+  }
+});
+
 
 
 //API's for the CATEGORY FEATURE

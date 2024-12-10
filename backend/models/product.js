@@ -12,6 +12,16 @@ const Product = sequelize.define(
       type: DataTypes.FLOAT,
       allowNull: false,
     },
+    description: { // Field to describe the product
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    stock: { // Field to track the quantity of the product in stock
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0, // Default stock value
+    },
+
     image: {
       type: DataTypes.STRING,
       allowNull: true,
