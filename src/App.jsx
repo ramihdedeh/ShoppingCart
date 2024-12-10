@@ -102,7 +102,7 @@ export default function App() {
         <Route
           path="/shop"
           element={
-            isLoggedIn && userRole !== 'admin' ? <ShopPage addToCart={addToCart} /> : <Navigate to="/login" />
+            <ShopPage />
           }
         />
         <Route

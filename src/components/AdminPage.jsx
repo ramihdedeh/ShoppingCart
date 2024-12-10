@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function AdminPage() {
   const [products, setProducts] = useState([]);
+  const navigate = useNavigate(); // Initialize navigate
 
   // Fetch all products
   const fetchProducts = async () => {
@@ -28,6 +30,11 @@ export default function AdminPage() {
     }
   };
 
+  // Navigate to the edit product page
+  const editProduct = (product) => {
+    navigate('/add-product', { state: { product } }); // Pass product data via state
+  };
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -37,14 +44,19 @@ export default function AdminPage() {
       <h1 style={headerStyle}>Admin Dashboard</h1>
       <div style={gridStyle}>
         {products.map((product) => (
-          <AdminProductCard key={product.id} product={product} deleteProduct={deleteProduct} />
+          <AdminProductCard
+            key={product.id}
+            product={product}
+            deleteProduct={deleteProduct}
+            editProduct={editProduct}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-function AdminProductCard({ product, deleteProduct }) {
+function AdminProductCard({ product, deleteProduct, editProduct }) {
   return (
     <div style={cardStyle}>
       <img src={product.image} alt={product.title} style={imageStyle} />
@@ -52,6 +64,9 @@ function AdminProductCard({ product, deleteProduct }) {
         <h3 style={titleStyle}>{product.title}</h3>
         <p style={priceStyle}>${parseFloat(product.price).toFixed(2)}</p>
       </div>
+      <button style={editButtonStyle} onClick={() => editProduct(product)}>
+        Edit
+      </button>
       <button style={deleteButtonStyle} onClick={() => deleteProduct(product.id)}>
         Delete
       </button>
@@ -74,9 +89,9 @@ const headerStyle = {
 
 const gridStyle = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', // Creates responsive columns
-  gap: '5rem', // Adds spacing between grid items
-  padding: '1rem', // Optional: Adds padding to the grid container
+  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+  gap: '5rem',
+  padding: '1rem',
 };
 
 const cardStyle = {
@@ -91,7 +106,7 @@ const cardStyle = {
   padding: '2rem',
   textAlign: 'center',
   transition: 'transform 0.2s ease, box-shadow 0.3s ease',
-  height: '100%', // Ensures consistent height for all cards
+  height: '100%',
 };
 
 const contentStyle = {
@@ -123,6 +138,19 @@ const priceStyle = {
   marginBottom: '1rem',
 };
 
+const editButtonStyle = {
+  backgroundColor: 'red',
+  color: 'white',
+  border: 'none',
+  borderRadius: '10px',
+  padding: '0.5rem 1rem',
+  cursor: 'pointer',
+  fontSize: '1rem',
+  width: '100%',
+  textTransform: 'uppercase',
+  marginBottom: '1rem', // Adds spacing between the edit button and delete button
+};
+
 const deleteButtonStyle = {
   backgroundColor: 'red',
   color: 'white',
@@ -131,7 +159,6 @@ const deleteButtonStyle = {
   padding: '0.5rem 1rem',
   cursor: 'pointer',
   fontSize: '1rem',
-  width: '100%', // Makes the button full width
+  width: '100%',
   textTransform: 'uppercase',
-  marginTop: '1rem', // Adds spacing between content and the button
 };

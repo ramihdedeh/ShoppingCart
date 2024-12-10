@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom'; // To receive product data for editing
 import axios from 'axios';
 
 export default function AddProductPage() {
+  const { state } = useLocation(); // Extract state passed from AdminPage
+  const editingProduct = state?.product; // Get product data if editing
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -10,11 +14,23 @@ export default function AddProductPage() {
   const [category, setCategory] = useState('');
   const [categories, setCategories] = useState([]); // State to store categories
 
+  // Populate form fields when editing a product
+  useEffect(() => {
+    if (editingProduct) {
+      setTitle(editingProduct.title);
+      setDescription(editingProduct.description);
+      setPrice(editingProduct.price);
+      setImage(editingProduct.image);
+      setStock(editingProduct.stock);
+      setCategory(editingProduct.category);
+    }
+  }, [editingProduct]);
+
   // Fetch categories from the backend
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/categories'); // Adjust the endpoint if needed
+        const response = await axios.get('http://localhost:5000/categories'); // Adjust endpoint if needed
         setCategories(response.data);
       } catch (err) {
         console.error('Error fetching categories:', err);
@@ -24,34 +40,42 @@ export default function AddProductPage() {
     fetchCategories();
   }, []);
 
-  const addProduct = async (product) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const product = { title, description, price, image, stock, category };
+
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/products', product, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      alert('Product added successfully');
-       // Reset form fields after adding a product
-       setTitle('');
-       setDescription('');
-       setPrice('');
-       setImage('');
-       setStock('');
-       setCategory('');
-    } catch (err) {
-      console.error('Error adding product:', err);
-    }
-  };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newProduct = { title, description, price, image, stock, category };
-    addProduct(newProduct);
+      if (editingProduct) {
+        // Use PUT to update an existing product
+        await axios.put(`http://localhost:5000/products/${editingProduct.id}`, product, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert('Product updated successfully');
+      } else {
+        // Use POST to create a new product
+        await axios.post('http://localhost:5000/products', product, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert('Product added successfully');
+      }
+
+      // Reset form fields
+      setTitle('');
+      setDescription('');
+      setPrice('');
+      setImage('');
+      setStock('');
+      setCategory('');
+    } catch (err) {
+      console.error('Error saving product:', err);
+    }
   };
 
   return (
     <div style={containerStyle}>
-      <h1 style={headerStyle}>Add New Product</h1>
+      <h1 style={headerStyle}>{editingProduct ? 'Edit Product' : 'Add New Product'}</h1>
       <form onSubmit={handleSubmit} style={formStyle}>
         <input
           type="text"
@@ -106,14 +130,14 @@ export default function AddProductPage() {
           ))}
         </select>
         <button type="submit" style={buttonStyle}>
-          Add Product
+          {editingProduct ? 'Update Product' : 'Add Product'}
         </button>
       </form>
     </div>
   );
 }
 
-// Styling
+// Styling (unchanged)
 const containerStyle = {
   padding: '2rem',
   backgroundColor: '#f9f9f9',

@@ -173,6 +173,24 @@ app.delete('/products/:id', isAdmin, async (req, res) => {
   }
 });
 
+//Update the product
+app.put('/products/:id', isAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { title, description, price, image, stock, category } = req.body;
+
+  try {
+    // Find and update the product by ID
+    const product = await Product.findByPk(id);
+    if (!product) return res.status(404).send('Product not found');
+
+    await product.update({ title, description, price, image, stock, category });
+    res.status(200).json(product); // Return the updated product
+  } catch (err) {
+    console.error('Error updating product:', err);
+    res.status(500).send('Error updating product');
+  }
+});
+
 
 // Start Server
 app.listen(PORT, () => {
