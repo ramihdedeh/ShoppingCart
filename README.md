@@ -120,6 +120,19 @@ image varchar(255)
 stock int   
 category  
 
+6. create cart table in mysql:
+```sql 
+CREATE TABLE Cart (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  userId INT NOT NULL,
+  productId INT NOT NULL,
+  quantity INT NOT NULL,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (userId) REFERENCES Users(id) ON DELETE CASCADE,
+  FOREIGN KEY (productId) REFERENCES Products(id) ON DELETE CASCADE
+);
+``` 
 
 
 Features
