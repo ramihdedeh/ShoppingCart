@@ -97,30 +97,36 @@ If the database does not already exist, follow these steps to create it:
 2. Run the following SQL command to create the database:
    ```sql
    CREATE DATABASE shoppingcart;
-3. you have to create two table:
+3. create the users table:
 ```sql
-CREATE TABLE users;
-CREATE TABLE products;
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    cart JSON DEFAULT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    role VARCHAR(50) DEFAULT 'user'
+);
+
 ```
-4. users have the following column:
+4. create the product table:
+```sql
+CREATE TABLE products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    price DECIMAL(10, 2) NOT NULL,
+    image VARCHAR(255),
+    stock INT NOT NULL DEFAULT 0,
+    category VARCHAR(255),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
-username    
-password    
-cart json   
-createdAt datetime   
-updatedAt datetime   
-role  
+```
 
-5. products have the following column:  
-
-title  
-description  
-price decimal(10,2)   
-image varchar(255)   
-stock int   
-category  
-
-6. create cart table in mysql:
+5. create cart table in mysql:
 ```sql 
 CREATE TABLE Cart (
   id INT AUTO_INCREMENT PRIMARY KEY,
